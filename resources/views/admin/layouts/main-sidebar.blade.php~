@@ -1,0 +1,178 @@
+<div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+<aside class="app-sidebar">
+    <div class="side-header">
+        <a class="header-brand1" href="{{route('adminHome')}}">
+            <img src="{{ getFile(isset($setting) ? $setting->logo : null)}}"
+                 class="header-brand-img" alt="logo">
+        </a>
+        <!-- LOGO -->
+    </div>
+    <ul class="side-menu">
+        <li><h3>{{ trns('elements') }}</h3></li>
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'adminHome' ? 'active' : '' }}"
+               href="{{route('adminHome')}}">
+                <i class="fe fe-home side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('main') }}</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'branches.index' ? 'active' : '' }}"
+               href="{{route('branches.index')}}">
+                <i class="fe fe-git-branch side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('branches') }}</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'groups.index' ? 'active' : '' }}"
+               href="{{route('groups.index')}}">
+                <i class="fe fe-users side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('groups') }}</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'advances.index' ? 'active' : '' }}"
+               href="{{route('advances.index')}}">
+                <i class="fe fe-dollar-sign side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('advances') }}</span>
+            </a>
+        </li>
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'advance-discount.index' ? 'active' : '' }}"
+               href="{{route('advance-discount.index')}}">
+                <i class="fe fe-chevrons-down side-menu__icon"></i>
+                <span class="side-menu__label">خصم سلفه</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'attendances.index' ? 'active' : '' }}"
+               href="{{route('attendances.index')}}">
+                <i class="fe fe-check-circle side-menu__icon"></i>
+                <span class="side-menu__label">الحضور والانصراف اليومي</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'users.index' ? 'active' : '' }}"
+               href="{{route('users.index')}}">
+                <i class="fe fe-user-check side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('employees') }}</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'showHoliday' ? 'active' : '' }}"
+               href="{{route('showHoliday')}}">
+                <i class="fe fe-sun side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('holidays') }}</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'instructions.index' ? 'active' : '' }}"
+               href="{{route('instructions.index')}}">
+                <i class="fe fe-inbox side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('instructions') }}</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'contact-us.index' ? 'active' : '' }}"
+               href="{{route('contact-us.index')}}">
+                <i class="fe fe-bookmark side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('contact-us') }}</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'customNotification.index' ? 'active' : '' }}"
+               href="{{route('customNotification.index')}}">
+                <i class="fe fe-navigation side-menu__icon"></i>
+                <span class="side-menu__label">الاشعارات</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'sliders.index' ? 'active' : '' }}"
+               href="{{route('sliders.index')}}">
+                <i class="fe fe-slack side-menu__icon"></i>
+                <span class="side-menu__label">الصور المتحركه</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'holidays_type.index' ? 'active' : '' }}"
+               href="{{route('holidays_type.index')}}">
+                <i class="fe fe-sun side-menu__icon"></i>
+                <span class="side-menu__label">انواع الاجازات</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'additions.index' ? 'active' : '' }}"
+               href="{{route('additions.index')}}">
+                <i class="fe fe-plus side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('additions') }}</span>
+            </a>
+        </li>
+
+
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'treasures.index' ? 'active' : '' }}"
+               href="{{route('treasures.index')}}">
+                <i class="fe fe-heart side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('treasures') }}</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'expenses.index' ? 'active' : '' }}"
+               href="{{route('expenses.index')}}">
+                <i class="fe fe-dollar-sign side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('expenses') }}</span>
+            </a>
+        </li>
+
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'revenue.index' ? 'active' : '' }}"
+               href="{{route('revenue.index')}}">
+                <i class="fe fe-dollar-sign side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('revenue') }}</span>
+            </a>
+        </li>
+
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'admins.index' ? 'active' : '' }}"
+               href="{{route('admins.index')}}">
+                <i class="fe fe-shield side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('admins') }}</span>
+            </a>
+        </li>
+
+        <li class="slide">
+            <a class="side-menu__item  {{ Route::currentRouteName() == 'settingIndex' ? 'active' : '' }}"
+               href="{{route('settingIndex')}}">
+                <i class="fe fe-settings side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('settings') }}</span>
+            </a>
+        </li>
+
+
+        <li class="slide">
+            <a class="side-menu__item {{ Route::currentRouteName() == 'admin.logout' ? 'active' : '' }}"
+               href="{{route('admin.logout')}}">
+                <i class="fe fe-lock side-menu__icon"></i>
+                <span class="side-menu__label">{{ trns('logout') }}</span>
+            </a>
+        </li>
+
+    </ul>
+</aside>
+

@@ -1,0 +1,106 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Addition as ObjModel;
+use App\Traits\FirebaseNotification;
+use Yajra\DataTables\DataTables;
+
+class AdditionService extends BaseService
+{
+    use FirebaseNotification;
+
+    protected string $folder = 'admin/addition';
+    protected string $route = 'additions';
+
+    public function __construct(ObjModel $model,protected UserService $userService)
+    {
+        parent::__construct($model);
+    }
+
+    public function index($request)
+    {
+        if ($request->ajax()) {
+            $obj = $this->getDataTable();
+            return DataTables::of($obj)
+                ->addColumn('action', function ($obj) {
+                    $buttons = '';
+                    $buttons .= '
+                            <button type="button" data-id="' . $obj->id . '" class="btn btn-pill btn-info-light editBtn">
+                            <i class="fa fa-edit"></i>
+                            </button>
+                       ';
+
+                    $buttons .= '<button class="btn btn-pill btn-danger-light" data-bs-toggle="modal"
+                        data-bs-target="#delete_modal" data-id="' . $obj->id . '" data-title="' . $obj->name . '">
+                        <i class="fas fa-trash"></i>
+                        </button>';
+
+
+
+                    return $buttons;
+                })->editColumn('created_at', function ($obj) {
+
+                    return $obj->created_at->;
+                })->editColumn('user_id', function ($obj) {
+                    return $obj->user->name;
+                })
+                ->addIndexColumn()
+                ->escapeColumns([])
+                ->make(true);
+        } else {
+            return view($this->folder . '/index', [
+                'route' => $this->route,
+                'pageTitle' => trns('additions'),
+            ]);
+        }
+    }
+
+
+    public function create()
+    {
+        return view($this->folder . '/parts/create', [
+            'route' => route($this->route . '.store'),
+            'users' => $this->userService->getAll(),
+        ]);
+    }
+
+    public function store($data): \Illuminate\Http\JsonResponse
+    {
+        $model = $this->createData($data);
+        if ($model) {
+            $notificationData=[
+              'title'=>'زياده جديده',
+              'body'=> '   تم اضافة زياده جديده لك بمقدار '.$data['value'].' جنيه',
+            ];
+//            $this->sendFcm($notificationData, $data['user_id']);
+
+            return response()->json(['status' => 200]);
+        } else {
+            return response()->json(['status' => 405]);
+        }
+    }
+
+    public function edit($id)
+    {
+        return view($this->folder . '/parts/edit', [
+            'route' => route($this->route . '.update', $id),
+            'obj' => $this->getById($id),
+            'users' => $this->userService->getAll(),
+        ]);
+    }
+
+    public function update($data, $id )
+    {
+        if ($this->updateData($id, $data)) {
+            $notificationData=[
+                'title'=>'زياده جديده',
+                'body'=> '   تم اضافة زياده جديده لك بمقدار '.$data['value'].' جنيه',
+            ];
+            $this->sendFcm($notificationData, $data['user_id']);
+            return response()->json(['status' => 200]);
+        } else {
+            return response()->json(['status' => 405]);
+        }
+    }
+}

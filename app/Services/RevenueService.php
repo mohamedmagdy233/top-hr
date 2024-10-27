@@ -1,0 +1,167 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Revenue as ObjModel;
+use App\Models\User;
+use App\Traits\FirebaseNotification;
+use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\DataTables;
+
+class RevenueService extends BaseService
+{
+    use FirebaseNotification;
+    protected string $folder = 'admin/revenue';
+    protected string $route = 'revenue';
+
+    public function __construct(ObjModel $model,protected UserService $userService,protected TreasuryService $treasuryService)
+    {
+        parent::__construct($model);
+    }
+
+    public function index($request)
+    {
+        if ($request->ajax()) {
+            $query = $this->model->query();
+
+            // Check if the request has a filter for the month
+            if ($request->has('filter') && !empty($request->filter)) {
+                try {
+                    $filterMonth = $request->filter;
+                    $currentYear = date('Y'); // Use the current year for filtering
+
+                    // Filter the data based on the selected month and the current year
+                    $query->whereYear('created_at', $currentYear)
+                        ->whereMonth('created_at', $filterMonth);
+                } catch (\Exception $e) {
+                    // Handle the exception if something goes wrong
+                }
+            }
+
+            // Return the filtered data for DataTables
+            return DataTables::of($query)
+                ->addColumn('action', function ($obj) {
+                    $buttons = '
+                    <button type="button" data-id="' . $obj->id . '" class="btn btn-pill btn-info-light editBtn">
+                        <i class="fa fa-edit"></i>
+                    </button>
+                    <button class="btn btn-pill btn-danger-light" data-bs-toggle="modal"
+                        data-bs-target="#delete_modal" data-id="' . $obj->id . '" data-title="' . $obj->name . '">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                ';
+                    return $buttons;
+                })
+                ->editColumn('created_at', function ($obj) {
+                    return $obj->created_at->format('Y-m-d');
+                })
+                ->editColumn('value', function ($obj) {
+                    return number_format($obj->value) . ' EGP';
+                })
+                ->editColumn('image', function ($obj) {
+                    if ($obj->image != null) {
+                        return '
+                        <img alt="image" onclick="window.open(this.src)" class="avatar avatar-md rounded-circle" src="' . asset('storage/' . $obj->image) . '">
+                    ';
+                    } else {
+                        return '
+                        <img alt="image" onclick="window.open(this.src)" class="avatar avatar-md rounded-circle" src="' . asset('assets/uploads/avatar.png') . '">
+                    ';
+                    }
+                })
+                ->addIndexColumn()
+                ->escapeColumns([])
+                ->make(true);
+        } else {
+            // For non-AJAX requests, return the view with necessary data
+            return view($this->folder . '/index', [
+                'route' => $this->route,
+                'pageTitle' => trns('revenues'),
+            ]);
+        }
+    }
+
+
+    public function create()
+    {
+        return view($this->folder . '/parts/create', [
+            'route' => route($this->route . '.store'),
+        ]);
+    }
+
+    public function store($data): \Illuminate\Http\JsonResponse
+    {
+        $total= $this->treasuryService->model->first();
+        if (!$total) {
+            $total = $this->treasuryService->createData(['value' => 0]);
+//                        $total->value =0;
+        }
+        $data['value']=$data['value']==null ? 0 : $data['value'];
+
+            $total->value = $total->value==null ? 0 : $total->value + $data['value'];
+            $total->save();
+
+
+        if (isset($data['image']) && is_file($data['image'])) {
+            // Store the image in the 'revenues' directory within the 'public' disk
+            $data['image'] = $data['image']->store('revenues', 'public');
+        }
+
+        $model = $this->createData($data);
+            if ($model) {
+
+                $notificationData =[
+                    'title'=>'ايداع نقدي',
+                    'body' => "تم إيداع مبلغ نقدي بقيمة {$data['value']} جنيه" . ' - ' . " {$data['reason']}",
+                ];
+                $hrUser = User::whereNull('group_id')
+                    ->where('status', '=', 1)
+                    ->get();
+
+                foreach ($hrUser as $hr) {
+                    $this->sendFcm($notificationData, $hr->id);
+                }
+                return response()->json(['status' => 200]);
+            } else {
+                return response()->json(['status' => 405]);
+            }
+        }
+
+
+
+
+    public function edit($id)
+    {
+        return view($this->folder . '/parts/edit', [
+            'route' => route($this->route . '.update', $id),
+            'obj' => $this->getById($id),
+        ]);
+    }
+
+    public function update($data, $id )
+    {
+        $revenueValue=$this->getById($id);
+        $total= $this->treasuryService->model->first();
+
+            $total->value = ($total->value - $revenueValue->value)  +  $data['value'];
+            $total->save();
+
+           if ($revenueValue['image']){
+
+               Storage::disk('public')->delete($revenueValue->image);
+           }
+           if (array_key_exists('image', $data) && is_file($data['image'])) {
+
+               $data['image'] = $data['image']->store('revenues', 'public');
+           }
+
+
+        $model = $this->updateData($id,$data);
+            if ($model) {
+                return response()->json(['status' => 200]);
+            } else {
+                return response()->json(['status' => 405]);
+            }
+        }
+
+}

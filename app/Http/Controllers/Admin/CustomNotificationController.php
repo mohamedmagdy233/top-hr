@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Services\customNotificationService as ObjService;
+
+class CustomNotificationController extends Controller
+{
+    public function __construct(protected ObjService $service){
+
+    }
+
+    public function index(Request $request)
+    {
+        return $this->service->index($request);
+
+    }
+
+    public function create()
+    {
+        return $this->service->create();
+
+    }
+
+    public function store(Request $request)
+    {
+
+        return $this->service->store($request->all());
+    }
+
+    public function destroy($id)
+    {
+        return $this->service->delete($id);
+
+    }
+}
